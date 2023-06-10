@@ -70,7 +70,7 @@ const pool = mysql.createPool({
     });
   });
   
-  // GET question from context
+  // GET question by context
   app.get('/question/:context', (req, res) => {
     const context = req.params.context;
   
@@ -84,6 +84,39 @@ const pool = mysql.createPool({
       res.json(results);
     });
   });
+
+  // EDIT question by context
+  app.put('/question/:context', (req, res) => {
+    const context = req.params.context;
+    const { updatedQuestion } = req.body;
+  
+    // Update data in the questions_table based on the context
+    pool.query('UPDATE questions_table SET Question = ? WHERE Context = ?', [updatedQuestion, context], (err, results) => {
+      if (err) {
+        console.error('Error updating question:', err);
+        res.status(500).json({ error: 'Failed to update question' });
+        return;
+      }
+      res.json({ message: 'Question updated successfully' });
+    });
+  });
+
+  // DELETE question by context
+  app.delete('/question/:context', (req, res) => {
+    const context = req.params.context;
+  
+    // Delete data from the questions_table based on the context
+    pool.query('DELETE FROM questions_table WHERE Context = ?', [context], (err, results) => {
+      if (err) {
+        console.error('Error deleting questions:', err);
+        res.status(500).json({ error: 'Failed to delete questions' });
+        return;
+      }
+      res.json({ message: 'Questions deleted successfully' });
+    });
+  });
+  
+  
 
   // POST users
   app.post('/users', (req, res) => {
